@@ -1,6 +1,6 @@
 "use client";
 
-import { loginSchema } from "@/schema/userSchema";
+import { loginSchema } from "@/lib/validation";
 import { Button } from "@/ui/button";
 import {
   Form,
@@ -30,7 +30,6 @@ const LoginForm = () => {
   return (
     <Form {...loginForm}>
       <form
-        className="mx-auto max-w-md mb-10"
         onSubmit={loginForm.handleSubmit((data) => {
           startTransition(() => {
             signIn("credentials", data);

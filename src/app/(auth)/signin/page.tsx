@@ -1,8 +1,12 @@
+"use client";
+
 import LoginForm from "@/components/Form/LoginForm";
-import ProviderList from "@/components/ProviderList";
+import { Button } from "@/components/ui/button";
+import { SiGithub } from "@icons-pack/react-simple-icons";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 
-export default async function SignIn() {
+export default function SignIn() {
   return (
     <>
       <div className="text-center mb-12">
@@ -17,14 +21,21 @@ export default async function SignIn() {
           </Link>
         </p>
       </div>
-      <LoginForm />
-      <div className="relative w-full h-[1px] bg-[#B3B8C2] mb-4">
-        <span className="absolute bg-light z-10 inline-block left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 px-2">
-          Or Continue With
-        </span>
+      <div className="mx-auto max-w-md">
+        <LoginForm />
+        <div className="space-y-5 mt-5">
+          <div className="w-full text-center">Or Continue With</div>
+          <Button
+            onClick={() => {
+              signIn("github");
+            }}
+            className="w-full"
+          >
+            <SiGithub color="#000" size={24} className="mr-3 inline-block" />
+            <span>Login With Github</span>
+          </Button>
+        </div>
       </div>
-
-      <ProviderList />
     </>
   );
 }

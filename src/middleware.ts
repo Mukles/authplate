@@ -11,7 +11,6 @@ export default auth((req) => {
   const isAuth = !!req.auth;
   const pathname = nextUrl.pathname;
   const origin = nextUrl.origin;
-  console.log({ isAuth });
 
   if (publicUrl.some((u) => pathname.startsWith(u))) {
     if (isAuth) {
