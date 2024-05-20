@@ -1,5 +1,8 @@
 "use client";
 
+import { login } from "@/actions/user";
+import { UserLogin } from "@/actions/user/types";
+import { useSubmitForm } from "@/hooks/useSubmit";
 import { loginSchema } from "@/lib/validation";
 import { Button } from "@/ui/button";
 import {
@@ -12,9 +15,9 @@ import {
 } from "@/ui/form";
 import { Input } from "@/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn } from "next-auth/react";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const LoginForm = () => {
@@ -25,14 +28,20 @@ const LoginForm = () => {
       password: "Mokles1234$",
     },
   });
+
   const [isPending, startTransition] = useTransition();
+  const { action } = useSubmitForm<UserLogin>(login, {
+    onError: () => {
+      toast.error("Login Failed");
+    },
+  });
 
   return (
     <Form {...loginForm}>
       <form
         onSubmit={loginForm.handleSubmit((data) => {
           startTransition(() => {
-            signIn("credentials", data);
+            action(data);
           });
         })}
       >

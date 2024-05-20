@@ -1,7 +1,6 @@
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Github from "next-auth/providers/github";
-import prisma from "./lib/prismaClient";
 
 export default {
   providers: [
@@ -24,31 +23,31 @@ export default {
     newUser: "/signup",
   },
   callbacks: {
-    async signIn({ account, user, credentials, profile }) {
-      console.log(profile);
-      return false;
+    async signIn({ user, credentials, account, profile }) {
+      // const outestProvider = account?.provider;
+      // const email = user.email;
+      // console.log({ credentials, profile, account, user });
+      // // Find or create the user in the database
+      // let dbUser = await prisma.user.findUnique({
+      //   where: { email: email as string },
+      // });
+      // if (!dbUser) {
+      //   dbUser = await prisma.user.create({
+      //     data: {
+      //       email: email,
+      //       name: user.name,
+      //       image: user.image,
+      //     },
+      //   });
+      // }
+      // return true;
     },
     jwt({ token, user, profile }) {
       return token;
     },
+
     session({ session }) {
       return session;
-    },
-  },
-  events: {
-    async createUser({ user }) {
-      console.log({ user });
-      await prisma.$connect();
-
-      await prisma.user.create({
-        data: {
-          first_name: "mukles",
-          last_name: "hossen",
-          email: user.email as string,
-          image: user.image as string,
-          isTermsAccepted: true,
-        },
-      });
     },
   },
 } satisfies NextAuthConfig;

@@ -4,12 +4,10 @@ import { UserLogin, UserRegister } from "@/actions/user/types";
 import { signIn } from "@/auth";
 import { ExtractVariables, SubmitFormState } from "@/hooks/useSubmit";
 import prisma from "@/lib/prismaClient";
-import { loginSchema, registerSchema } from "@/lib/validation";
+import { registerSchema } from "@/lib/validation";
 import bcrypt from "bcryptjs";
-import jwt, { Secret } from "jsonwebtoken";
-import { AuthError } from "next-auth";
 import "server-only";
-import { mutate, prismaExclude } from "../index";
+import { mutate } from "../index";
 
 export const createUser = async (
   prevState: SubmitFormState<UserRegister>,
@@ -77,65 +75,9 @@ export const createUser = async (
   });
 };
 
-export const login2 = async (
+export async function login(
+  prevState: SubmitFormState<UserLogin>,
   data: ExtractVariables<UserLogin>,
-): Promise<SubmitFormState<UserLogin>> => {
-  const parsed = loginSchema.safeParse(data);
-  if (!parsed.success) {
-    return {
-      data: null,
-      error: [],
-      message: null,
-      isError: true,
-      isSuccess: false,
-      statusCode: null,
-    };
-  }
-  return await mutate<UserLogin>(async () => {
-    await prisma.$connect();
-    const user = await prisma.user.findFirst({
-      where: { email: data.email },
-      select: prismaExclude("User", ["password"]),
-    });
-    if (!user) {
-      return {
-        data: null,
-        error: [],
-        isError: true,
-        message: "User not found!",
-        statusCode: 500,
-      };
-    }
-
-    const isMatch = bcrypt.compare(data.password, user.email);
-
-    if (!isMatch) {
-      throw Error("Incorrect password");
-    }
-
-    const accessToken = jwt.sign(
-      { sub: user.id },
-      process.env.JWT_SECRET as Secret,
-      {
-        expiresIn: process.env.JWT_EXPIRES,
-      },
-    );
-  });
-};
-
-export async function login(data: ExtractVariables<UserLogin>) {
-  try {
-    signIn("credentials", data);
-  } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case "CredentialsSignin": {
-          return { message: error.message };
-        }
-        default: {
-          return { message: "Something went wrong!" };
-        }
-      }
-    }
-  }
+): Promise<SubmitFormState<UserLogin>> {
+  signIn("credentials", data);
 }
