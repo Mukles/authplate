@@ -1,18 +1,12 @@
 "use client";
-import { verifyEmail } from "@/app/action";
-import useResponse from "@/hooks/useResponse";
 import InputField from "../InputField";
 import LabelField from "../LabelField";
 import SubmitButton from "../SubmitButton";
 
 const EmailVerificationForm = () => {
-  const veriFyEmail = verifyEmail.bind(null, new Date().toISOString(), false);
-  const { dispatch, showSubmitted, error, successMessage } =
-    useResponse(veriFyEmail);
-
   return (
     <>
-      <form className="mx-auto max-w-md" action={dispatch}>
+      <form className="mx-auto max-w-md">
         <div className="mb-4">
           <LabelField label="Email" />
           <InputField
@@ -22,9 +16,6 @@ const EmailVerificationForm = () => {
             name="email"
             required
           />
-        </div>
-        <div className="mb-2">
-          <small className="text-red-600">{error}</small>
         </div>
 
         <SubmitButton

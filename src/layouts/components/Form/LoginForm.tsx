@@ -15,9 +15,7 @@ import {
 } from "@/ui/form";
 import { Input } from "@/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { z } from "zod";
 
 const LoginForm = () => {
@@ -29,20 +27,13 @@ const LoginForm = () => {
     },
   });
 
-  const [isPending, startTransition] = useTransition();
-  const { action } = useSubmitForm<UserLogin>(login, {
-    onError: () => {
-      toast.error("Login Failed");
-    },
-  });
+  const { action, state } = useSubmitForm<UserLogin>(login);
 
   return (
     <Form {...loginForm}>
       <form
-        onSubmit={loginForm.handleSubmit((data) => {
-          startTransition(() => {
-            action(data);
-          });
+        onSubmit={loginForm.handleSubmit(async (data) => {
+          await action(data);
         })}
       >
         <div className="mb-4">
@@ -85,13 +76,17 @@ const LoginForm = () => {
             )}
           />
         </div>
+        {state?.isError && (
+          <div>
+            <p className="text-destructive">{state.message}</p>
+          </div>
+        )}
 
         <Button
-          disabled={isPending}
           type="submit"
           className="  py-2 px-4 font-bold w-full text-lg mt-4"
         >
-          {isPending ? "Login..." : "Login"}
+          Login
         </Button>
       </form>
     </Form>

@@ -111,19 +111,7 @@ export type Button = {
   link: string;
 };
 
-export type Pricing = {
-  title: string;
-  description: string;
-  offer: string;
-  monthly_yearly_toggle: "monthly" | "yearly" | "toggle";
-  billing: {
-    monthly: string;
-    annually: string;
-  };
-  pricing_card: PricingCard[];
-};
-
-export type PricingCard = {
+interface PricingCard {
   name: string;
   content: string;
   currency: string;
@@ -133,7 +121,22 @@ export type PricingCard = {
   button_label: string;
   button_link: string;
   services: string[];
-};
+}
+
+type Package = "monthly" | "yearly";
+
+interface Pricing {
+  title: string;
+  description: string;
+  offer: string;
+  monthly_yearly_toggle: Package;
+  billing: {
+    monthly: string;
+    annually: string;
+  };
+  pricing_card: PricingCard[];
+  draft: boolean;
+}
 
 export type SubscriptionData = {
   subscription_id: string;

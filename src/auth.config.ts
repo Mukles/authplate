@@ -1,6 +1,8 @@
+import { createToken } from "@/actions/jwt";
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Github from "next-auth/providers/github";
+import prisma from "./lib/prismaClient";
 
 export default {
   providers: [
@@ -24,25 +26,41 @@ export default {
   },
   callbacks: {
     async signIn({ user, credentials, account, profile }) {
-      // const outestProvider = account?.provider;
-      // const email = user.email;
-      // console.log({ credentials, profile, account, user });
-      // // Find or create the user in the database
-      // let dbUser = await prisma.user.findUnique({
-      //   where: { email: email as string },
-      // });
-      // if (!dbUser) {
-      //   dbUser = await prisma.user.create({
-      //     data: {
-      //       email: email,
-      //       name: user.name,
-      //       image: user.image,
-      //     },
-      //   });
-      // }
-      // return true;
+      //@ts-ignore
+      if (account?.type === "credentials" && !user.emailVerified) {
+        return false;
+      }
+
+      //@ts-ignore
+      if (account?.type === "credentials" && user.emailVerified) {
+        return true;
+      }
+
+      const email = user.email;
+      let dbUser = await prisma.user.findUnique({
+        where: { email: email as string },
+      });
+
+      if (!dbUser) {
+        dbUser = await prisma.user.create({
+          data: {
+            email: email,
+            image: user.image,
+            firstName: user.name,
+            lastName: user.name,
+            accessToken: await createToken({ email }),
+            provider: "Github",
+            emailVerified: true,
+            isTermsAccepted: true,
+          },
+        });
+        console.log({ dbUser });
+        return dbUser;
+      }
+      return true;
     },
-    jwt({ token, user, profile }) {
+    jwt({ token, user, profile, account }) {
+      console.log({ user, profile, account });
       return token;
     },
 

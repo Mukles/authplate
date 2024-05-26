@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useFormState } from "react-dom";
+import { toast } from "sonner";
 
 export type SubmitFormState<T> = {
   data: Omit<T, "variables"> | null;
@@ -27,7 +28,7 @@ export function useSubmitForm<T>(
     prevState: SubmitFormState<Omit<T, "variables">>,
     data: ExtractVariables<T>,
   ) => Promise<SubmitFormState<Omit<T, "variables">>>,
-  { onSuccess = () => {}, onError = () => {} }: SubmitFormCallbacks<T> = {},
+  { onSuccess, onError }: SubmitFormCallbacks<T> = {},
 ) {
   const ref = useRef<any>(null);
   // @ts-ignore
@@ -41,15 +42,17 @@ export function useSubmitForm<T>(
     statusCode: null,
   });
 
-  console.log(state);
-
   useEffect(() => {
     if (state?.isError) {
-      typeof onError === "function" && onError(state, ref);
+      typeof onError === "function"
+        ? onError(state, ref)
+        : toast.error(state?.message);
     }
 
     if (state?.isSuccess) {
-      typeof onSuccess === "function" && onSuccess(state, ref);
+      typeof onSuccess === "function"
+        ? onSuccess(state, ref)
+        : toast.success(state?.message);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);

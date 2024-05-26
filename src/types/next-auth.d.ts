@@ -3,19 +3,23 @@ import { DefaultSession } from "next-auth";
 declare module "next-auth" {
   interface Session {
     user: {
+      firstName: string;
+      lastName: string;
+      emailVerified: boolean;
       accessToken: string;
       email: string;
-      stripe_customer_id: string;
-      isActive: boolean;
-      stripe_subscription_id: string;
-      verified: boolean;
     } & DefaultSession["user"];
   }
 }
 
 declare module "@auth/core/jwt" {
-  interface User {}
+  adapter: {
+  }
   interface JWT {
+    firstName: string;
+    lastName: string;
+    emailVerified: boolean;
+    email: string;
     access_token: string;
     expires_at: number;
     refresh_token: string;

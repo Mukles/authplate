@@ -17,18 +17,19 @@ import {
 import { Input } from "@/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { z } from "zod";
 
 const RegisterForm = () => {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const registerForm = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      first_name: "mukles",
-      last_name: "hossen",
+      firstName: "mukles",
+      lastName: "hossen",
       email: "mukles.themefisher@gmail.com",
       password: "Mokles1234$",
       confirmPassword: "Mokles1234$",
@@ -36,24 +37,12 @@ const RegisterForm = () => {
     },
   });
 
-  const { action } = useSubmitForm<UserRegister>(createUser, {
-    onSuccess: () => {
-      toast.success("Registration Successful");
-      signIn("credentials", {
-        email: registerForm.getValues("email"),
-        password: registerForm.getValues("password"),
-        callbackUrl: "/",
-      });
-    },
-    onError: ({ message, error }) => {
-      toast.error(message, {
-        description: error.length > 0 && (
-          <ul>
-            {error.map((err, index) => (
-              <li key={index}>{err.message}</li>
-            ))}
-          </ul>
-        ),
+  const { action, state } = useSubmitForm<UserRegister>(createUser, {
+    async onSuccess() {
+      const { email, password } = registerForm.getValues();
+      await signIn("credentials", {
+        email,
+        password,
       });
     },
   });
@@ -69,7 +58,7 @@ const RegisterForm = () => {
         <div className="mb-4 col-12 md:col-6">
           <FormField
             control={registerForm.control}
-            name={"first_name"}
+            name={"firstName"}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
@@ -87,7 +76,7 @@ const RegisterForm = () => {
         <div className="mb-4 col-12 md:col-6">
           <FormField
             control={registerForm.control}
-            name={"last_name"}
+            name={"lastName"}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
@@ -161,7 +150,7 @@ const RegisterForm = () => {
           />
         </div>
 
-        <div className="flex items-center mb-10">
+        <div className="flex items-center mb-4">
           <FormField
             control={registerForm.control}
             name={"isTermsAccepted"}
@@ -188,6 +177,12 @@ const RegisterForm = () => {
             )}
           />
         </div>
+
+        {state?.isError && (
+          <div className="mb-4">
+            <p className="text-destructive">{state.message}</p>
+          </div>
+        )}
 
         <div className="col-12">
           <Button

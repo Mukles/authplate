@@ -2,16 +2,15 @@
 
 import Logo from "@/components/Logo";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import config from "@/config/config.json";
 import menu from "@/config/menu.json";
 import { Search } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
+import Profile from "./Profile";
 
 //  child navigation link interface
 export interface IChildNavigationLink {
@@ -28,7 +27,6 @@ export interface INavigationLink {
 }
 
 const Header = () => {
-  // distructuring the main menu from menu object
   const { main }: { main: INavigationLink[] } = menu;
   const { navigation_button, settings } = config;
   // const [remember, setRemember] = useState(false);
@@ -167,27 +165,7 @@ const Header = () => {
               </Link>
             </Button>
           ) : (
-            <Link
-              href="/dashboard"
-              className="rounded-full border-2 border-border p-1 "
-            >
-              {user?.image ? (
-                <Image
-                  src={user?.image}
-                  alt="user image"
-                  width={20}
-                  height={20}
-                  className="rounded-full"
-                />
-              ) : (
-                <Avatar className="w-8 h-8">
-                  <AvatarImage src={user?.email!} alt="@shadcn" />
-                  <AvatarFallback className="uppercase ">
-                    {user?.name?.slice(0, 2)}
-                  </AvatarFallback>
-                </Avatar>
-              )}
-            </Link>
+            <Profile />
           )}
         </div>
       </nav>

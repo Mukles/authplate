@@ -1,10 +1,20 @@
 import RegisterForm from "@/components/Form/RegistrationForm";
+import Link from "next/link";
 
 export default function Register() {
   return (
     <>
       <div className="text-center mb-12">
-        <h1 className="h2 font-semibold">Sign up to your account</h1>
+        <h1 className="h2 font-semibold">Create an account</h1>
+        <p className="text-center">
+          Already have an account? Sign in?{" "}
+          <Link
+            className="font-semibold text-primary cursor-pointer"
+            href="/signin"
+          >
+            signin
+          </Link>
+        </p>
       </div>
       <RegisterForm />
       <div className="relative w-full h-[1px] bg-[#B3B8C2] mb-4">

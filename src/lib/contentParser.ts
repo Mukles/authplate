@@ -22,7 +22,9 @@ const parseFrontmatter = (frontmatter: any) => {
 };
 
 // get list page data, ex: _index.md
-export const getListPage = (filePath: string) => {
+export const getListPage = <T>(
+  filePath: string,
+): { frontmatter: T; content: string } => {
   const pageDataPath = path.join(contentPath, filePath);
   if (!fs.existsSync(pageDataPath)) {
     notFound();

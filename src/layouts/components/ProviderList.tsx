@@ -17,7 +17,5 @@ export default function ProviderList() {
     }
   }, []);
 
-  console.log(providers);
-
   return <h1>Providers</h1>;
 }

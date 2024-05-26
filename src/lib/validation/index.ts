@@ -2,12 +2,12 @@ import { z } from "zod";
 
 export const registerSchema = z
   .object({
-    first_name: z
+    firstName: z
       .string({
         required_error: "This field has to be filled.",
       })
       .min(3, { message: "This field has to be filled." }),
-    last_name: z
+    lastName: z
       .string({
         required_error: "This field has to be filled.",
       })
@@ -63,4 +63,10 @@ export const loginSchema = z.object({
     .refine((value) => /[!@#$%^&*()_+\-=\[\]{};':",./<>?|\\`~]/.test(value), {
       message: "Password must contain at least one special character",
     }),
+});
+
+export const otpSchema = z.object({
+  otp: z.string().refine((value) => String(value).length === 4, {
+    message: "OTP must be exactly 4 digits.",
+  }),
 });

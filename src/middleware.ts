@@ -1,16 +1,19 @@
-import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
-import authConfig from "./auth.config";
+import { auth } from "./auth";
 
-const publicUrl = ["/signin", "/signup", "/verify", "/forgot-password"];
-
-const { auth } = NextAuth(authConfig);
+const publicUrl = ["/signin", "/signup", "/forgot-password"];
 
 export default auth((req) => {
   const { nextUrl } = req;
+  const { emailVerified } = req.auth?.user || {};
+  console.log({ auth: req.auth });
   const isAuth = !!req.auth;
   const pathname = nextUrl.pathname;
   const origin = nextUrl.origin;
+
+  if (!emailVerified && isAuth && pathname !== "/otp") {
+    return NextResponse.redirect(new URL(`/otp`, origin));
+  }
 
   if (publicUrl.some((u) => pathname.startsWith(u))) {
     if (isAuth) {
@@ -19,11 +22,12 @@ export default auth((req) => {
       return NextResponse.next();
     }
   }
+
   if (!isAuth) {
     return NextResponse.redirect(new URL(`/signin?from=${pathname}`, origin));
   }
 });
 
 export const config = {
-  matcher: ["/signin", "/signup/", "/"],
+  matcher: ["/signin", "/signup/", "/", "/otp"],
 };
