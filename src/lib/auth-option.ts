@@ -66,20 +66,27 @@ export const authOptions = {
         token.image = session.image;
         token.isPasswordExit = session.isPasswordExit;
       }
+
+      if (user) {
+        token.firstName = user.firstName;
+        token.lastName = user.lastName;
+        token.userId = user.userId;
+        if (user.image) {
+          token.image = user.image;
+        }
+      }
       return token;
     },
 
     async session({ session, token }) {
       if (token) {
-        const {
-          accessToken,
-          expiredAt,
-          email,
-          id,
-          firstName,
-          lastName,
-          isPasswordExit,
-        } = token;
+        const { email, firstName, lastName, image, userId } = token;
+        const user = session.user;
+        user.email = email;
+        user.firstName = firstName;
+        user.lastName = lastName;
+        user.image = image;
+        user.userId = userId;
       }
       return session;
     },
