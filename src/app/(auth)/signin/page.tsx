@@ -1,10 +1,10 @@
 "use client";
 
-import LoginForm from "@/components/Form/LoginForm";
 import { Button } from "@/components/ui/button";
 import { SiGithub } from "@icons-pack/react-simple-icons";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
+import LoginForm from "./_components/login-form";
 
 export default function SignIn() {
   return (

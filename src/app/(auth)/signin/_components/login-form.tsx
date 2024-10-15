@@ -1,8 +1,5 @@
 "use client";
 
-import { login } from "@/actions/user";
-import { UserLogin } from "@/actions/user/types";
-import { useSubmitForm } from "@/hooks/useSubmit";
 import { loginSchema } from "@/lib/validation";
 import { Button } from "@/ui/button";
 import {
@@ -27,15 +24,9 @@ const LoginForm = () => {
     },
   });
 
-  const { action, state } = useSubmitForm<UserLogin>(login);
-
   return (
     <Form {...loginForm}>
-      <form
-        onSubmit={loginForm.handleSubmit(async (data) => {
-          await action(data);
-        })}
-      >
+      <form>
         <div className="mb-4">
           <FormField
             control={loginForm.control}
@@ -76,11 +67,6 @@ const LoginForm = () => {
             )}
           />
         </div>
-        {state?.isError && (
-          <div>
-            <p className="text-destructive">{state.message}</p>
-          </div>
-        )}
 
         <Button
           type="submit"
