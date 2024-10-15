@@ -1,28 +1,29 @@
-import { DefaultSession } from "next-auth";
+import "next-auth";
 
 declare module "next-auth" {
   interface Session {
-    user: {
-      firstName: string;
-      lastName: string;
-      emailVerified: boolean;
-      accessToken: string;
-      email: string;
-    } & DefaultSession["user"];
+    user: User;
+  }
+
+  interface User {
+    email: string;
+    image: string;
+    id: string;
+    accessToken: string;
+    firstName: string;
+    lastName?: string;
+    expiredAt: number;
   }
 }
 
 declare module "@auth/core/jwt" {
-  adapter: {
-  }
   interface JWT {
-    firstName: string;
-    lastName: string;
-    emailVerified: boolean;
     email: string;
-    access_token: string;
-    expires_at: number;
-    refresh_token: string;
-    error?: "RefreshAccessTokenError";
+    image: string;
+    id: string;
+    accessToken: string;
+    firstName: string;
+    lastName?: string;
+    expiredAt: number;
   }
 }
