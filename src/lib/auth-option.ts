@@ -1,4 +1,5 @@
-import { NextAuthConfig } from "next-auth";
+import { loginUser } from "@/actions/user";
+import { NextAuthConfig, User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Facebook from "next-auth/providers/facebook";
 import Google from "next-auth/providers/google";
@@ -14,7 +15,15 @@ export const authOptions = {
       },
       type: "credentials",
       async authorize(credentials) {
-        return {};
+        const { email, password } = credentials;
+        const { data, isError } = await loginUser({
+          email: email as string,
+          password: password as string,
+        });
+        if (isError) {
+          return null;
+        }
+        return data as User;
       },
     }),
 
@@ -48,25 +57,6 @@ export const authOptions = {
 
   callbacks: {
     async signIn({ user, account }) {
-      if (["oauth", "oidc"].includes(account?.type!)) {
-        const { data: dbUser } = await updateUserProfile({
-          ...user,
-          provider: account?.provider,
-        });
-
-        if (!dbUser) {
-          return false;
-        }
-
-        user.email = dbUser.email;
-        user.id = dbUser.id;
-        user.accessToken = dbUser.accessToken;
-        user.expiredAt = dbUser.expiredAt;
-        user.firstName = dbUser.firstName;
-        user.lastName = dbUser.lastName;
-        return true;
-      }
-
       return true;
     },
     async jwt({ token, user, trigger, session }) {
@@ -76,22 +66,6 @@ export const authOptions = {
         token.image = session.image;
         token.isPasswordExit = session.isPasswordExit;
       }
-
-      if (user) {
-        token.email = user.email!;
-        token.id = user.id!;
-        token.accessToken = user.accessToken;
-        token.expiredAt = user.expiredAt;
-        token.firstName = user.firstName;
-        token.lastName = user.lastName;
-        token.image = user.image!;
-        token.isPasswordExit = user.isPasswordExit;
-      }
-
-      if (token.expiredAt && new Date(token.expiredAt).getTime() < Date.now()) {
-        return null;
-      }
-
       return token;
     },
 
@@ -106,14 +80,6 @@ export const authOptions = {
           lastName,
           isPasswordExit,
         } = token;
-
-        session.user.email = email!;
-        session.user.id = id;
-        session.user.accessToken = accessToken;
-        session.user.expiredAt = expiredAt;
-        session.user.firstName = firstName;
-        session.user.lastName = lastName;
-        session.user.image = token.image;
       }
       return session;
     },

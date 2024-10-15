@@ -1,6 +1,7 @@
 import { Schema, model, models } from "mongoose";
 
 export interface UserDocument {
+  userId: string;
   email: string;
   password: string;
   firstName: string;
@@ -22,6 +23,11 @@ const UserSchema = new Schema<UserDocument>(
         /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
         "Email is invalid",
       ],
+    },
+    userId: {
+      type: String,
+      required: [true, "userId is required"],
+      unique: true,
     },
     password: {
       type: String,

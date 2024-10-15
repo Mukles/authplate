@@ -6,24 +6,22 @@ declare module "next-auth" {
   }
 
   interface User {
+    userId: string;
     email: string;
-    image: string;
-    id: string;
-    accessToken: string;
+    password: string;
     firstName: string;
-    lastName?: string;
-    expiredAt: number;
+    lastName: string;
+    image?: string;
   }
 }
 
 declare module "@auth/core/jwt" {
   interface JWT {
+    userId: string;
     email: string;
-    image: string;
-    id: string;
-    accessToken: string;
+    password: string;
     firstName: string;
-    lastName?: string;
-    expiredAt: number;
+    lastName: string;
+    image?: string;
   }
 }

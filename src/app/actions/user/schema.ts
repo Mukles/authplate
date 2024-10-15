@@ -43,3 +43,24 @@ export const registerSchema = z
       path: ["confirmPassword"],
     },
   );
+
+export const loginSchema = z.object({
+  email: z
+    .string()
+    .min(1, { message: "This field has to be filled." })
+    .email("This is not a valid email."),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long" })
+    .max(32, { message: "Password must be less than 32 characters long" })
+    .trim() // Remove leading and trailing whitespace
+    .refine((value) => /[a-z]/i.test(value), {
+      message: "Password must contain at least one letter",
+    })
+    .refine((value) => /\d/.test(value), {
+      message: "Password must contain at least one digit",
+    })
+    .refine((value) => /[!@#$%^&*()_+\-=\[\]{};':",./<>?|\\`~]/.test(value), {
+      message: "Password must contain at least one special character",
+    }),
+});

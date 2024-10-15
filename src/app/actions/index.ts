@@ -1,5 +1,6 @@
 "use server";
 
+import jwt from "jsonwebtoken";
 import "server-only";
 import { SubmitFormState } from "./types";
 
@@ -39,3 +40,15 @@ export async function mutate<T>(
     };
   }
 }
+
+// Define a secret key for signing tokens
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+
+export const generateToken = (userId: string, email: string): string => {
+  // Generate JWT token
+  return jwt.sign(
+    { id: userId, email }, // Payload
+    JWT_SECRET, // Secret key
+    { expiresIn: "1h" }, // Token expiration
+  );
+};

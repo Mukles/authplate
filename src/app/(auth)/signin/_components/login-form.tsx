@@ -1,5 +1,8 @@
 "use client";
 
+import { login } from "@/actions/user";
+import { UserLogin } from "@/actions/user/types";
+import { useSubmitForm } from "@/hooks/useSubmit";
 import { loginSchema } from "@/lib/validation";
 import { Button } from "@/ui/button";
 import {
@@ -12,10 +15,14 @@ import {
 } from "@/ui/form";
 import { Input } from "@/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const LoginForm = () => {
+  const [isPending, startTransition] = useTransition();
+  const { action: loginAction, state } = useSubmitForm<UserLogin>(login);
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -24,9 +31,17 @@ const LoginForm = () => {
     },
   });
 
+  console.log(state);
+
   return (
     <Form {...loginForm}>
-      <form>
+      <form
+        onSubmit={loginForm.handleSubmit((data) => {
+          startTransition(async () => {
+            loginAction(data);
+          });
+        })}
+      >
         <div className="mb-4">
           <FormField
             control={loginForm.control}
@@ -35,7 +50,7 @@ const LoginForm = () => {
               <FormItem>
                 <FormLabel>
                   Email
-                  <span className="text-red-500">*</span>
+                  <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input placeholder="abc@example.com" {...field} />
@@ -70,9 +85,11 @@ const LoginForm = () => {
 
         <Button
           type="submit"
-          className="  py-2 px-4 font-bold w-full text-lg mt-4"
+          className="py-2 px-4 font-bold w-full text-lg mt-4"
+          disabled={isPending}
         >
           Login
+          {isPending && <Loader2 className="size-5 animate-spin" />}
         </Button>
       </form>
     </Form>
