@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { SiGithub } from "@icons-pack/react-simple-icons";
+import { SiGithub, SiGoogle } from "@icons-pack/react-simple-icons";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import LoginForm from "./_components/login-form";
@@ -31,7 +31,16 @@ export default function SignIn() {
             }}
             className="w-full"
           >
-            <SiGithub color="#000" size={24} className="mr-3 inline-block" />
+            <SiGithub color="#fff" size={24} className="mr-3 inline-block" />
+            <span>Login With Github</span>
+          </Button>
+          <Button
+            onClick={() => {
+              signIn("google");
+            }}
+            className="w-full"
+          >
+            <SiGoogle size={24} className="mr-3 inline-block" />
             <span>Login With Github</span>
           </Button>
         </div>
