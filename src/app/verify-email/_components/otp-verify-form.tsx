@@ -20,8 +20,8 @@ import { useEffect, useRef, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Timer } from "./timer";
-import { Button } from "./ui/button";
+import { Timer } from "../../../layouts/components/timer";
+import { Button } from "../../../layouts/components/ui/button";
 
 const OtpVerifyForm = () => {
   const { data, update } = useSession();

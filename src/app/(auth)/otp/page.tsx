@@ -1,6 +1,6 @@
 "use client";
 
-import OtpVerifyForm from "@/components/OtpVerfyForm";
+import OtpVerifyForm from "@/app/verify-email/_components/OtpVerfyForm";
 
 export default function Otp() {
   return (
