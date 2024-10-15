@@ -3,10 +3,11 @@ import { Schema, model, models } from "mongoose";
 export interface UserDocument {
   email: string;
   password: string;
-  name: string;
-  phone: string;
-  image: string;
+  firstName: string;
+  lastName: string;
+  image?: string;
   _id: string;
+  isTermsAccepted: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -27,15 +28,22 @@ const UserSchema = new Schema<UserDocument>(
       required: [true, "Password is required"],
       select: false,
     },
-    name: {
+    firstName: {
       type: String,
       required: [true, "Fullname is required"],
       minLength: [3, "fullname must be at least 3 characters"],
       maxLength: [25, "fullname must be at most 25 characters"],
     },
-    phone: {
+
+    lastName: {
       type: String,
-      default: "",
+      required: [true, "Fullname is required"],
+      minLength: [3, "fullname must be at least 3 characters"],
+      maxLength: [25, "fullname must be at most 25 characters"],
+    },
+    isTermsAccepted: {
+      type: Boolean,
+      default: true,
     },
   },
   {

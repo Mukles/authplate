@@ -1,23 +1,45 @@
-import { MongoClient, ServerApiVersion } from "mongodb";
+import mongoose, { Mongoose } from "mongoose";
 
-const uri = process.env.MONGO_URI;
-const options = {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-};
+const DATABASE_URL = process.env.MONGO_URI;
 
-export const dbConnect = async () => {
-  if (!uri) {
-    throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
+if (!DATABASE_URL) {
+  throw new Error(
+    "Please define the DATABASE_URL environment variable inside .env.local",
+  );
+}
+
+// Augment the global object to include a cached mongoose connection.
+declare global {
+  // This keeps the cache consistent between hot reloads in development
+  var mongoose: {
+    conn: Mongoose | null;
+    promise: Promise<Mongoose> | null;
+  };
+}
+
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
+async function connectDB(): Promise<Mongoose> {
+  if (cached.conn) {
+    return cached.conn;
   }
 
-  try {
-    let client = new MongoClient(uri, options);
-    const clientPromise = client.connect();
-    await clientPromise;
-    return clientPromise;
-  } catch (error) {}
-};
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+    };
+
+    cached.promise = mongoose.connect(DATABASE_URL!, opts).then((mongoose) => {
+      return mongoose;
+    });
+  }
+
+  cached.conn = await cached.promise;
+  return cached.conn;
+}
+
+export default connectDB;

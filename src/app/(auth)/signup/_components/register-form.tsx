@@ -1,5 +1,8 @@
 "use client";
 
+import { register } from "@/actions/user";
+import { UserRegister } from "@/actions/user/types";
+import { useSubmitForm } from "@/hooks/useSubmit";
 import { registerSchema } from "@/lib/validation";
 import { Button } from "@/ui/button";
 import { Checkbox } from "@/ui/checkbox";
@@ -13,13 +16,11 @@ import {
 } from "@/ui/form";
 import { Input } from "@/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const RegisterForm = () => {
-  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const registerForm = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -33,9 +34,19 @@ const RegisterForm = () => {
     },
   });
 
+  const { action: registerRequest, state } =
+    useSubmitForm<UserRegister>(register);
+
   return (
     <Form {...registerForm}>
-      <form className="mx-auto mb-10 row">
+      <form
+        onSubmit={registerForm.handleSubmit((data) => {
+          startTransition(() => {
+            registerRequest(data);
+          });
+        })}
+        className="mx-auto mb-10 row"
+      >
         <div className="mb-4 col-12 md:col-6">
           <FormField
             control={registerForm.control}
