@@ -1,7 +1,5 @@
 "use client";
 
-import { sendVerificationOtp, verifyOtp } from "@/actions/opt";
-import { OTP } from "@/actions/opt/types";
 import { useSubmitForm } from "@/hooks/useSubmit";
 import { otpSchema } from "@/lib/validation";
 import {
