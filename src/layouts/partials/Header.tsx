@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import config from "@/config/config.json";
 import menu from "@/config/menu.json";
 import { Search } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -150,16 +150,10 @@ const Header = () => {
           )}
           <ThemeSwitcher />
           {status === "unauthenticated" ? (
-            <Button
-              onClick={() => {
-                signOut();
-              }}
-              asChild
-              className="h-auto"
-            >
+            <Button className="h-auto">
               <Link
                 className="btn btn-outline-primary btn-sm hidden lg:inline-block"
-                href="/login"
+                href="/signin"
               >
                 Sign in
               </Link>

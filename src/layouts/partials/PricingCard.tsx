@@ -18,8 +18,6 @@ const PricingCard = ({
 }: PricingCardType & { selectedPackage: Package }) => {
   const price = selectedPackage === "monthly" ? monthly_price : yearly_price;
 
-  console.log({ selectedPackage, price });
-
   return (
     <div className="rounded-2xl  bg-light">
       <div className="p-8">

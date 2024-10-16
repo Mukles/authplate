@@ -3,7 +3,7 @@ import { Schema, model, models } from "mongoose";
 export interface UserDocument {
   userId: string;
   email: string;
-  password: string;
+  password?: string;
   firstName: string;
   lastName: string;
   image?: string;
@@ -32,8 +32,8 @@ const UserSchema = new Schema<UserDocument>(
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
       select: false,
+      required: false, // Password is optional
     },
     firstName: {
       type: String,

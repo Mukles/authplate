@@ -31,8 +31,6 @@ const LoginForm = () => {
     },
   });
 
-  console.log(state);
-
   return (
     <Form {...loginForm}>
       <form

@@ -200,24 +200,41 @@ export const updateUser = async (
   data: Omit<ExtractVariables<UserRegister>, "password">,
 ): Promise<SubmitFormState<UserRegister>> => {
   try {
+    await connectDB();
+    console.log({ step1: data });
+
     // Try to find the user by email
     let user: HydratedDocument<UserRegister> | null = await User.findOne({
       email: data.email,
     });
 
+    console.log({ step2: user });
+
     // If the user does not exist, create a new user
     if (!user) {
-      const newUser = new User(data);
-      user = await newUser.save();
-
-      return {
-        data: user,
-        error: [],
-        message: "New user created successfully",
-        isError: false,
-        isSuccess: true,
-        statusCode: 201,
-      };
+      try {
+        console.log({ data });
+        const newUser = new User(data);
+        user = await newUser.save();
+        return {
+          data: user,
+          error: [],
+          message: "New user created successfully",
+          isError: false,
+          isSuccess: true,
+          statusCode: 201,
+        };
+      } catch (error) {
+        console.error("Error during user creation:", { error });
+        return {
+          data: null,
+          error: [],
+          message: "An error occurred during user creation",
+          isError: true,
+          isSuccess: false,
+          statusCode: 500,
+        };
+      }
     }
 
     // Exclude userId from data before updating
@@ -243,6 +260,7 @@ export const updateUser = async (
       statusCode: 200,
     };
   } catch (error) {
+    console.log({ step2Error: error });
     return {
       data: null,
       error: [],

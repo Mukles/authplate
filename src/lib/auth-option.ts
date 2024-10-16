@@ -1,8 +1,8 @@
 import { loginUser, updateUser } from "@/actions/user";
 import { NextAuthConfig, User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import Facebook from "next-auth/providers/facebook";
 import Google from "next-auth/providers/google";
+import { v4 as uuidv4 } from "uuid";
 
 export const authOptions = {
   providers: [
@@ -37,27 +37,30 @@ export const authOptions = {
           response_type: "code",
         },
       },
-    }),
-
-    Facebook({
-      clientId: process.env.FACEBOOK_CLIENT_ID!,
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
+      profile(profile) {
+        const userId = uuidv4();
+        const { given_name, family_name, email, picture } = profile;
+        profile.firstName = given_name;
+        profile.lastName = family_name;
+        profile.email = email;
+        profile.image = picture;
+        profile.userId = userId;
+        return profile;
+      },
     }),
   ],
-  debug: false,
+  debug: process.env.NODE_ENV !== "development",
   secret: process.env.AUTH_SECRET,
   session: {
     strategy: "jwt",
   },
-
+  trustHost: true,
   pages: {
-    signIn: "/login",
-    newUser: "/register",
+    signIn: "/signin",
+    newUser: "/signup",
   },
-
   callbacks: {
     async signIn({ user, account }) {
-      console.log({ user });
       if (account?.provider !== "credentials") {
         const { firstName, lastName, email, userId, image } = user;
         const { data: dbUser } = await updateUser({
