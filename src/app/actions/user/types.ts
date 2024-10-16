@@ -8,7 +8,10 @@ export type UserRegister = {
   firstName: string;
   lastName: string;
   image?: string;
-  variables: z.infer<typeof registerSchema>;
+  variables: z.infer<typeof registerSchema> & {
+    userId?: string;
+    image?: string;
+  };
 };
 
 export type UserLogin = {

@@ -1,4 +1,4 @@
-import { loginUser } from "@/actions/user";
+import { loginUser, updateUser } from "@/actions/user";
 import { NextAuthConfig, User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Facebook from "next-auth/providers/facebook";
@@ -45,7 +45,7 @@ export const authOptions = {
     }),
   ],
   debug: false,
-  secret: process.env.NEXT_AUTH_SECRET,
+  secret: process.env.AUTH_SECRET,
   session: {
     strategy: "jwt",
   },
@@ -57,6 +57,28 @@ export const authOptions = {
 
   callbacks: {
     async signIn({ user, account }) {
+      console.log({ user });
+      if (account?.provider !== "credentials") {
+        const { firstName, lastName, email, userId, image } = user;
+        const { data: dbUser } = await updateUser({
+          userId,
+          firstName,
+          lastName,
+          provider: "google",
+          email: email!,
+          image: image!,
+          isTermsAccepted: true,
+        });
+
+        if (!dbUser) {
+          return false;
+        }
+        user.email = dbUser?.email;
+        user.userId = dbUser?.userId!;
+        user.firstName = dbUser?.firstName;
+        user.lastName = dbUser?.lastName;
+        return true;
+      }
       return true;
     },
     async jwt({ token, user, trigger, session }) {

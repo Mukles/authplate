@@ -5,6 +5,7 @@ import connectDB from "@/db/connection";
 import { formatZodIssues } from "@/lib/utils/formatZodIssues";
 import User from "@/models/Users";
 import bcrypt from "bcryptjs";
+import { HydratedDocument } from "mongoose";
 import { isRedirectError } from "next/dist/client/components/redirect";
 import { redirect } from "next/navigation";
 import "server-only";
@@ -191,6 +192,64 @@ export const login = async (
       isError: true,
       isSuccess: false,
       statusCode: 400,
+    };
+  }
+};
+
+export const updateUser = async (
+  data: Omit<ExtractVariables<UserRegister>, "password">,
+): Promise<SubmitFormState<UserRegister>> => {
+  try {
+    // Try to find the user by email
+    let user: HydratedDocument<UserRegister> | null = await User.findOne({
+      email: data.email,
+    });
+
+    // If the user does not exist, create a new user
+    if (!user) {
+      const newUser = new User(data);
+      user = await newUser.save();
+
+      return {
+        data: user,
+        error: [],
+        message: "New user created successfully",
+        isError: false,
+        isSuccess: true,
+        statusCode: 201,
+      };
+    }
+
+    // Exclude userId from data before updating
+    const { userId, ...updateData } = data;
+
+    // Update the user without modifying userId
+    const updatedUser = await User.findOneAndUpdate(
+      { email: data.email },
+      {
+        $set: {
+          ...updateData,
+        },
+      },
+      { new: true },
+    ).select("-password -_id"); // Exclude password and _id from the result
+
+    return {
+      data: updatedUser,
+      error: [],
+      message: "User updated successfully",
+      isError: false,
+      isSuccess: true,
+      statusCode: 200,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error: [],
+      message: "An error occurred during user update or creation",
+      isError: true,
+      isSuccess: false,
+      statusCode: 500,
     };
   }
 };

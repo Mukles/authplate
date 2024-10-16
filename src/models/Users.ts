@@ -11,6 +11,7 @@ export interface UserDocument {
   isTermsAccepted: boolean;
   createdAt: Date;
   updatedAt: Date;
+  provider: "google" | "github" | "credential";
 }
 
 const UserSchema = new Schema<UserDocument>(
@@ -36,16 +37,20 @@ const UserSchema = new Schema<UserDocument>(
     },
     firstName: {
       type: String,
-      required: [true, "Fullname is required"],
-      minLength: [3, "fullname must be at least 3 characters"],
-      maxLength: [25, "fullname must be at most 25 characters"],
+      required: [true, "First name is required"],
+      minLength: [3, "First name must be at least 3 characters"],
+      maxLength: [25, "First name must be at most 25 characters"],
     },
-
     lastName: {
       type: String,
-      required: [true, "Fullname is required"],
-      minLength: [3, "fullname must be at least 3 characters"],
-      maxLength: [25, "fullname must be at most 25 characters"],
+      required: [true, "Last name is required"],
+      minLength: [3, "Last name must be at least 3 characters"],
+      maxLength: [25, "Last name must be at most 25 characters"],
+    },
+    provider: {
+      type: String,
+      enum: ["google", "github", "credential"],
+      default: "credential",
     },
     isTermsAccepted: {
       type: Boolean,

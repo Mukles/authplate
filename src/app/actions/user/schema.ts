@@ -34,6 +34,10 @@ export const registerSchema = z
     isTermsAccepted: z.boolean().refine((value) => value, {
       message: "You must agree to the terms and conditions",
     }),
+    provider: z
+      .enum(["google", "github", "credential"])
+      .default("credential")
+      .optional(),
   })
   .refine(
     (data) =>
